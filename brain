@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [[ "$#" == 0 ]]; then
+    echo 'text needed'
+    exit
+fi
+
+app_dir=/home/$(whoami)/web/brain
+count_file=/home/$(whoami)/web/brain/count.txt
+date_f=$(date +%Y-%m-%d)
+date_t=$(date '+%Y-%m-%d %H:%M:%S')
+post_dir=/home/$(whoami)/web/brain/_posts/
+name=$(<$count_file)
+name_no_space=$(echo "$name" | sed 's/ /-/g')
+filename="$date_f-$name_no_space.md"
+text="---
+date: '$date_t'
+---
+$@"
+
+echo "$text" > "$post_dir$filename"
+
+((name++))
+echo $name > $count_file
+
+# add and commit
+cd $app_dir
+git add -A .
+git commit -m 'new thought'
+git push deploy master
